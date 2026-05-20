@@ -265,7 +265,7 @@
 
             <h1 style="color: var(--success-green);">Congratulations!</h1>
             <p>You shattered the meter! Your free Ice Cream has been unlocked. 50 of on item rupees 100.</p>
-            <button class="btn" onclick="alert('Reward Claimed!')">Claim Reward</button>
+            <button class="btn" id="claimBtn">Claim Reward</button>
         </div>
 
     </div>
@@ -366,8 +366,8 @@
                 let displayVolume = 0;
 
                 // --- THE RIGGED LOGIC ---
-                // For the first 2 attempts, NEVER let it cross 80%
-                if (attemptCount <= 2) {
+                // For the first 6 attempts, NEVER let it cross 80%
+                if (attemptCount <= 6) {
                     if (rawVolumePercent > 78) {
                         // Create a struggle effect just below the 80% line
                         displayVolume = 78 + (Math.random() * 1.5); 
@@ -375,7 +375,7 @@
                         displayVolume = rawVolumePercent;
                     }
                 } else {
-                    // 3rd attempt onwards, allow full 100%
+                    // 7th attempt onwards, allow full 100%
                     displayVolume = rawVolumePercent * 1.2; // slight boost to help win
                 }
 
@@ -386,8 +386,8 @@
                 iceCreamFill.style.height = `${displayVolume}%`;
                 levelValue.innerText = Math.round(displayVolume);
 
-                // Win Condition: If volume crosses 90%
-                if (displayVolume >= 90 && attemptCount > 2) {
+                // Win Condition: If volume crosses 90% and attempt is greater than 6
+                if (displayVolume >= 90 && attemptCount > 6) {
                     endGame(stream, 'win');
                     return;
                 }
@@ -418,6 +418,26 @@
         // Event Listeners
         document.getElementById('startBtn').addEventListener('click', initGame);
         document.getElementById('retryBtn').addEventListener('click', initGame);
+
+        // App Redirection & Play Store Fallback Logic
+        document.getElementById('claimBtn').addEventListener('click', () => {
+            alert('Reward Claimed!');
+            
+            const playStoreUrl = "https://play.google.com/store/search?q=blinkit&c=apps";
+            const appScheme = "grofers://"; // Blinkit uses grofers:// protocol internally
+            
+            const startTime = Date.now();
+            
+            // Try opening the app
+            window.location.href = appScheme;
+            
+            // If the app doesn't open within 1 second, redirect to Play Store
+            setTimeout(() => {
+                if (Date.now() - startTime < 1500) {
+                    window.location.href = playStoreUrl;
+                }
+            }, 1000);
+        });
 
     </script>
 </body>
